@@ -4,6 +4,10 @@ import gradio as gr
 import numpy as np
 from skimage.feature import local_binary_pattern
 
+# how to run:
+# 1. python app.py
+# 2. open http://
+# 3. upload an image to see the result
 knn = joblib.load("models/lbp_knn.pkl")
 
 CLASSES = ["angry", "disgust", "fear", "happy", "sad", "surprise", "neutral"]
