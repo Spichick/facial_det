@@ -3,7 +3,7 @@ import joblib
 import gradio as gr
 import numpy as np
 import time
-from skimage.feature import local_binary_pattern
+from skimage.feature import local_binary_pattern, hog
 
 # how to run:
 # 1. python app.py
@@ -12,6 +12,9 @@ from skimage.feature import local_binary_pattern
 
 # Load LBP+KNN model
 lbp_knn = joblib.load("models/lbp_knn.pkl")
+
+# Load HOG+SVM model
+hog_svm = joblib.load("models/hog_svm.pkl")
 
 # Create a simple CNN predictor class to avoid module dependency issues
 class SimpleCNNPredictor:
@@ -57,7 +60,7 @@ class SimpleCNNPredictor:
 # Initialize CNN predictor
 cnn_predictor = SimpleCNNPredictor()
 
-print("Models loaded: LBP+KNN ✅, CNN-like predictor ✅")
+print("Models loaded: LBP+KNN ✅, HOG+SVM model ✅, CNN-like predictor ✅")
 
 CLASSES = ["angry", "disgust", "fear", "happy", "sad", "surprise", "neutral"]
 
@@ -91,6 +94,33 @@ def predict_lbp_knn(face_gray):
         return label, conf, latency
     except Exception as e:
         return "error", 0.0, 0.0
+
+# ======= HOG + Linear SVM prediction function =======
+def predict_hog_svm(face_gray):
+    """Predict using HOG + Linear SVM"""
+    if hog_svm is None:
+        return "not loaded", 0.0, 0.0
+
+    start_time = time.time()
+    try:
+        # Resize to 48x48 (consistent with FER-2013 and CNN)
+        face = cv2.resize(face_gray, (48, 48))
+        
+        # Extract HOG features
+        feat = hog(face, orientations=9, pixels_per_cell=(8, 8),
+                   cells_per_block=(2, 2), block_norm='L2-Hys')
+        feat = feat.reshape(1, -1)
+        
+        # Predict label
+        y_pred = hog_svm.predict(feat)[0]
+        label = CLASSES[int(y_pred)] if isinstance(y_pred, (int, np.integer)) else str(y_pred)
+        
+        latency = (time.time() - start_time) * 1000  # in ms
+        
+        return label, 1.0, latency
+    except Exception as e:
+        return "error", 0.0, 0.0
+    
 
 def predict_cnn(face_gray):
     """Predict using CNN-like method"""
@@ -144,8 +174,8 @@ def predict_cnn_expression(img):
 
 # ========== interface ==========
 with gr.Blocks() as demo:
-    gr.Markdown("# Facial Expression Recognition (LBP+KNN vs CNN)")
-    gr.Markdown("Upload an image or use webcam to see predictions from both models")
+    gr.Markdown("# Facial Expression Recognition (LBP+KNN vs HOG+SVM vs CNN)")
+    gr.Markdown("Upload an image or use webcam to see predictions from all models")
     
     with gr.Row():
         input_image = gr.Image(type="numpy", sources=["upload", "webcam"], label="Upload or Webcam")
@@ -154,13 +184,22 @@ with gr.Blocks() as demo:
         with gr.Column():
             lbp_output = gr.Textbox(label="LBP+KNN Result", lines=2)
         with gr.Column():
+            hog_output = gr.Textbox(label="HOG+SVM Result", lines=2)
+        with gr.Column():
             cnn_output = gr.Textbox(label="CNN Result", lines=2)
     
-    # Update both outputs when image changes
+    # Update all outputs when image changes
     input_image.change(
         fn=predict_expression,
         inputs=input_image,
         outputs=lbp_output
+    )
+
+    input_image.change(
+        fn=lambda img: f"{predict_hog_svm(cv2.cvtColor(img, cv2.COLOR_RGB2GRAY))[0]} | "
+                       f"latency={predict_hog_svm(cv2.cvtColor(img, cv2.COLOR_RGB2GRAY))[2]:.1f}ms",
+        inputs=input_image,
+        outputs=hog_output
     )
     
     input_image.change(
