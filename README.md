@@ -19,4 +19,4 @@ cnn.py, hog_svm.py, lbp_knn.ipynb    →  3 Python codes who generate the models
 
 app.py contains the main program.
 
-The other files are useless.
+The other files are not required.
