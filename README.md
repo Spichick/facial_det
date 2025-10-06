@@ -25,6 +25,8 @@ facial_det/
 │            → 3 Python codes that generate the models
 │
 ├── utils/
+│   ├── lbp_features.py
+│   ├── lbp_knn.py
 │
 ├── app.py                 → main program
 ├── emorec_pretrain.py
