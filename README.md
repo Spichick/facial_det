@@ -11,12 +11,24 @@
 
 # Structure
 
-In models:
+facial_det/
+│
+├── models/
+│   ├── cnn.h5
+│   ├── hog_svm.pkl
+│   ├── lbp_knn.pkl
+│   │        → 3 trained models
+│   │
+│   ├── cnn.py
+│   ├── hog_svm.py
+│   └── lbp_knn.ipynb
+│            → 3 Python codes that generate the models
+│
+├── utils/
+│
+├── app.py                 → main program
+├── emorec_pretrain.py
+├── train_mini_xception.py
+└── README.md
 
-cnn.h5, hog_svm.pkl, lbp_knn.pkl     →  3 trained models  
-cnn.py, hog_svm.py, lbp_knn.ipynb    →  3 Python codes who generate the models  
-
-
-app.py contains the main program.
-
-The other files are not required.
+3 trained models, 3 Python codes that generate the models and the main program are useful, the other files are not required (Some are only for debug or give us insights).
