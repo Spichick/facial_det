@@ -5,13 +5,8 @@ from sklearn.neighbors import KNeighborsClassifier
 from .lbp_features import lbp_hist
 
 class LbpKnnModel:
-    """
-    统一接口：
-      - fit(X_faces_gray, y)
-      - predict_one(face_gray48) -> (label, confidence)
-      - predict_batch(faces_gray48) -> (labels, confidences)
-      - save(path), load(path)
-    """
+
+    #统一接口
     def __init__(self, n_neighbors=5, weights="distance", metric="euclidean"):
         self.knn = KNeighborsClassifier(
             n_neighbors=n_neighbors,
@@ -38,7 +33,7 @@ class LbpKnnModel:
 
     def predict_one(self, face_gray48):
         """
-        返回: (label, confidence[0..1])
+        返回label, confidence[0..1]
         """
         x = self._extract_one(face_gray48)[None, :]
         yhat = self.knn.predict(x)[0]
@@ -83,8 +78,5 @@ def load_model(path):
     return _model_singleton
 
 def predict(face_gray48):
-    """
-    给 UI 的统一入口：返回 (label, confidence)
-    """
     assert _model_singleton is not None, "LBP+KNN model not loaded. Call load_model(path) first."
     return _model_singleton.predict_one(face_gray48)

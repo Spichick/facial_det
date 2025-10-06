@@ -64,4 +64,4 @@ history = model.fit(train_ds, validation_data=val_ds, epochs=25)
 
 # Save
 model.save("/kaggle/working/mini_xception.h5")
-print("✅ Model saved to /kaggle/working/mini_xception.h5")
+print("Model saved to /kaggle/working/mini_xception.h5")

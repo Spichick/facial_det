@@ -11,20 +11,17 @@ from tensorflow.keras.models import load_model
 # 2. open the local link shown (e.g. http://127.0.0.1:7860)
 # 3. upload an image or use webcam to see the results
 
-# ===========================
 # Load Models
-# ===========================
+
 lbp_knn = joblib.load("models/lbp_knn.pkl")       # LBP + KNN
 hog_svm = joblib.load("models/hog_svm.pkl")       # HOG + SVM
 cnn_model = load_model("models/cnn.h5") # CNN (trained model)
 
-print("✅ Models loaded successfully: LBP+KNN, HOG+SVM, CNN")
+print("Models loaded successfully: LBP+KNN, HOG+SVM, CNN")
 
 CLASSES = ["angry", "disgust", "fear", "happy", "sad", "surprise", "neutral"]
 
-# ===========================
 # Feature Extraction
-# ===========================
 def extract_lbp_feature(gray, P=10, R=2, method="uniform"):
     """Extract LBP histogram as feature vector."""
     lbp = local_binary_pattern(gray, P, R, method)
@@ -34,9 +31,7 @@ def extract_lbp_feature(gray, P=10, R=2, method="uniform"):
     return hist
 
 
-# ===========================
 # Prediction Functions
-# ===========================
 
 def predict_lbp_knn(face_gray):
     """Predict using LBP+KNN."""
@@ -58,8 +53,7 @@ def predict_hog_svm(face_gray):
     start_time = time.time()
     try:
         face = cv2.resize(face_gray, (48, 48))
-        feat = hog(face, orientations=9, pixels_per_cell=(8, 8),
-                   cells_per_block=(2, 2), block_norm='L2-Hys')
+        feat = hog(face, orientations=9, pixels_per_cell=(8, 8), cells_per_block=(2, 2), block_norm='L2-Hys')
         feat = feat.reshape(1, -1)
         y_pred = hog_svm.predict(feat)[0]
         label = CLASSES[int(y_pred)] if isinstance(y_pred, (int, np.integer)) else str(y_pred)
@@ -86,9 +80,7 @@ def predict_cnn(face_gray):
         return f"error: {str(e)}", 0.0, 0.0
 
 
-# ===========================
 # Main Wrapper (face detection + model calls)
-# ===========================
 
 def unified_prediction(img):
     """Run face detection and all three model predictions."""
@@ -119,9 +111,7 @@ def unified_prediction(img):
     return lbp_text, hog_text, cnn_text
 
 
-# ===========================
 # Gradio Interface
-# ===========================
 with gr.Blocks() as demo:
     gr.Markdown("# Facial Expression Recognition (LBP+KNN vs HOG+SVM vs CNN)")
     gr.Markdown("Upload an image or use webcam to see predictions from all models")

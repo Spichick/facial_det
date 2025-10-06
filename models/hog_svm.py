@@ -35,4 +35,4 @@ print(classification_report(y_test, y_pred))
 
 os.makedirs("models", exist_ok=True)
 joblib.dump(svm, "models/hog_svm.pkl")
-print("✅ Model saved: models/hog_svm.pkl")
+print("Model saved: models/hog_svm.pkl")
