@@ -10,7 +10,7 @@
 
 
 # Structure
-
+'''
 facial_det/
 │
 ├── models/
@@ -30,5 +30,5 @@ facial_det/
 ├── emorec_pretrain.py
 ├── train_mini_xception.py
 └── README.md
-
+'''
 3 trained models, 3 Python codes that generate the models and the main program are useful, the other files are not required (Some are only for debug or give us insights).
