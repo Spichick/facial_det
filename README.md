@@ -34,3 +34,11 @@ facial_det/
 └── README.md
 ```
 3 trained models, 3 Python codes that generate the models and the main program are useful, the other files are not required (Some are only for debug or give us insights).
+
+# Contuibutors
+
+Spichick: Mingxuan
+
+Han-Topaz: Han
+
+xiaoyu882: Xiaoyu
